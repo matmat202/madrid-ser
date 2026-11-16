@@ -4,7 +4,9 @@
 
 Una web para el móvil: con tu ubicación, dice qué plazas SER hay a menos de 50 m (verde, azul,
 alta rotación, naranja, roja), si se paga ahora mismo, el tiempo máximo y hasta cuándo puedes
-quedarte, contando festivos de Madrid. Debajo, los tres aparcamientos municipales más cercanos.
+quedarte, contando festivos de Madrid. En el distrito Centro añade la norma de su Zona de Bajas
+Emisiones de Especial Protección: sin estar empadronado, un coche con etiqueta B o C no puede
+aparcar en el SER, solo en un aparcamiento. Debajo, los tres aparcamientos municipales más cercanos.
 La posición no sale del teléfono.
 
 A phone page for Madrid's regulated street parking (SER): whether you pay at the spot you are

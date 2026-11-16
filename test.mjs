@@ -13,7 +13,7 @@ const at = s => new Date(s);
 let checks = 0;
 
 async function suite(mod) {
-  const { serNow, serAt, indexSegments, nearestParks, serviceOn } = mod;
+  const { serNow, serAt, indexSegments, nearestParks, serviceOn, zbeNote } = mod;
   const fails = [];
   const eq = (name, got, want) => { checks++; if (got !== want) fails.push(`${name}: got ${JSON.stringify(got)}, want ${JSON.stringify(want)}`); };
   const hol = data.hol;
@@ -97,14 +97,14 @@ async function suite(mod) {
       if (m <= 50 && !(best.has(g[2]) && best.get(g[2]).m0 <= m)) best.set(g[2], { m0: m, g });
     });
     return [...best.values()].sort((x, y) => x.m0 - y.m0).map(({ m0, g }) =>
-      [data.col[g[2]], Math.round(m0), data.str[g[4]], g[5], g[3]].join('|')).join(' ; ');
+      [data.col[g[2]], Math.round(m0), data.str[g[4]], g[5], g[3], g[6]].join('|')).join(' ; ');
   };
   let seed = 3, mism = 0, multi = 0;
   const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
   for (let t = 0; t < 120; t++) {
     const g = data.seg[Math.floor(rnd() * data.seg.length)];
     const p = { lat: g[0] + (rnd() - 0.5) * 0.0012, lon: g[1] + (rnd() - 0.5) * 0.0016 };
-    const got = serAt(p, idx).map((h) => [h.colour, h.m, h.street, h.number, h.spaces].join('|')).join(' ; ');
+    const got = serAt(p, idx).map((h) => [h.colour, h.m, h.street, h.number, h.spaces, h.zbe].join('|')).join(' ; ');
     if (got !== brute(p)) mism++;
     if (got.includes(' ; ')) multi++;
   }
@@ -143,6 +143,20 @@ async function suite(mod) {
     'Si aparcas ahora: el servicio acaba a las 21:00 y el coche puede quedarse hasta el próximo día de servicio');
   eq('...and leaves next empty', serNow('Verde', at('2026-11-16T22:00+01:00'), run(40)).next, '');
 
+  // ZBEDEP Distrito Centro: a B/C car may not use the SER inside it, and the card must say so.
+  // Bordadores 1 (Centro, inside), Ronda de Segovia (Centro, perimeter); at Génova 10 the verde
+  // segment is on Génova's Centro kerb (a perimeter street), the azul and alta on Chamberí's.
+  const zAt = (lat, lon) => serAt({ lat, lon }, idx).map(h => h.zbe).join();
+  eq('Bordadores is inside the ZBE', zAt(40.41629, -3.70784), '1');
+  const rs = data.seg.find(g => data.str[g[4]] === 'Ronda de Segovia' && g[6] === 2);
+  eq('Ronda de Segovia is the ZBE edge', !!rs && serAt({ lat: rs[0], lon: rs[1] }, idx)[0].zbe, 2);
+  eq('Génova 10: verde on the edge, azul and alta outside', serAt({ lat: 40.42700, lon: -3.69463 }, idx).map(h => h.colour + ':' + h.zbe).join(), 'Verde:2,Alta Rotación:0,Azul:0');
+  eq('inside note', zbeNote(1), 'Zona de Bajas Emisiones Distrito Centro: si no estás empadronado en el distrito, con etiqueta B o C no puedes aparcar en la calle, solo en un aparcamiento (salvo invitación de un empadronado); ECO, máximo 2 h; CERO, sin límite.');
+  eq('edge note hedges', zbeNote(2).startsWith('En el borde de la Zona de Bajas Emisiones Distrito Centro. Si la plaza queda dentro: si no estás'), true);
+  eq('no note outside', [zbeNote(0), zbeNote(undefined)].join('|'), '|');
+  // build_data.py marks distrito Centro rows from calles-ser-2026-09-30.csv: 1,578 segments.
+  eq('zbe counts (outside, inside, edge)', [0, 1, 2].map(k => data.seg.filter(g => g[6] === k).length).join(), '32925,1492,86');
+
   // The data agrees with the raw CSV's colour counts (calles-ser-2026-09-30.csv).
   const counts = data.col.map((_, k) => data.seg.filter(s => s[2] === k).length);
   eq('colour counts', counts.join(','), '30190,4150,73,57,33');
@@ -167,6 +181,9 @@ if (process.argv.includes('--plants')) {
     'rojo 2 h': ["'Rojo': { name: 'ámbito hospitalario (rojo)', maxMin: 240", "'Rojo': { name: 'ámbito hospitalario (rojo)', maxMin: 120"],
     'clock in UTC': ["timeZone: 'Europe/Madrid'", "timeZone: 'UTC'"],
     'lookup off by a cell': ['for (let di = -1; di <= 1; di++)', 'for (let di = 0; di <= 0; di++)'],
+    'zbe dropped from the lookup': ['spaces: s[3], zbe: s[6] || 0 }', 'spaces: s[3], zbe: 0 }'],
+    'edge treated as inside': ['if (code === 2) return `En el borde', 'if (code === 2) return `Zona de Bajas Emisiones Distrito Centro: ${rule}.`; if (0) return `En el borde'],
+    'B/C allowed 2 h': ['con etiqueta B o C no puedes aparcar en la calle, solo en un aparcamiento', 'con etiqueta B o C, máximo 2 h'],
   };
   const dir = mkdtempSync(join(tmpdir(), 'madrid-ser-plant-'));
   for (const [name, [from, to]] of Object.entries(PLANTS)) {

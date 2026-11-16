@@ -42,6 +42,7 @@
   .parks h2 { font-size: 1rem; margin: 0 0 .4rem; }
   .parks ol { margin: 0; padding-left: 1.2rem; }
   .parks li { margin: .45rem 0; }
+  .zbe { border-top: 1px solid var(--line); padding-top: .4rem; margin-top: .45rem; font-size: .93rem; }
   .warn { background: #fff7e6; color: #6b4200; border-color: #f0d199; }
   @media (prefers-color-scheme: dark) { .warn { background: #2b2311; color: #f3d59a; border-color: #5c4a1f; } }
   footer { color: var(--mute); font-size: .8rem; margin: 1.5rem 0 2rem; }
@@ -61,13 +62,14 @@
       <option value="40.42723,-3.72330">Fco. y Jacinto Alcántara (naranja)</option>
       <option value="40.48244,-3.68897">Hospital La Paz (roja)</option>
       <option value="40.44700,-3.72800">Ciudad Universitaria (sin SER)</option>
+      <option value="40.41629,-3.70784">Bordadores 1 (verde, ZBE Centro)</option>
     </select>
   </div>
   <div id="out" aria-live="polite"></div>
   <footer id="foot"></footer>
 </main>
 <script type="module">
-import { serNow, serAt, indexSegments, nearestParks } from './ser.js';
+import { serNow, serAt, indexSegments, nearestParks, zbeNote } from './ser.js';
 
 const COLOURS = { 'Verde': 'var(--verde)', 'Azul': 'var(--azul)', 'Alta Rotación': 'var(--alta)', 'Naranja': 'var(--naranja)', 'Rojo': 'var(--rojo)' };
 const LABEL = { 'Verde': 'Plaza verde', 'Azul': 'Plaza azul', 'Alta Rotación': 'Alta rotación', 'Naranja': 'Naranja (disuasorio)', 'Rojo': 'Roja (hospitalario)' };
@@ -97,6 +99,7 @@ function render() {
       <h2>${LABEL[h.colour]} <small>${esc(h.street)} ${esc(h.number)} · a ${dist(h.m)}</small></h2>
       <p class="state ${r.paid ? 'paid' : 'free'}">${esc(r.text)}</p>
       ${r.paid ? `<p class="line">${esc(r.stay)}</p><p class="line">${esc(r.leave)}</p>` : `<p class="line">${esc(r.next)}</p>`}
+      ${h.zbe ? `<p class="line zbe">${esc(zbeNote(h.zbe))}</p>` : ''}
     </div>`);
   }
   const parks = nearestParks(here, data);
@@ -129,7 +132,7 @@ if (Number.isFinite(qa) && Number.isFinite(qo)) setHere(qa, qo);
 $('foot').innerHTML = `Datos: Ayuntamiento de Madrid, <a href="https://datos.madrid.es">datos.madrid.es</a>, CC BY 4.0 —
   ${esc(data.src.files['calles.csv'])} (${data.seg.length.toLocaleString('es')} tramos SER), aparcamientos públicos municipales, calendario laboral.
   La calle de cada plaza es la de esos datos, a 30/09/2026: la ampliación del SER del 3/11/2026 (parte de Opañel y San Isidro) puede no aparecer.
-  Horario y tiempos máximos: madrid.es, Servicio de Estacionamiento Regulado. Orientativo: la señal y el parquímetro mandan.`;
+  Horario y tiempos máximos: madrid.es, Servicio de Estacionamiento Regulado; en el distrito Centro, las normas de su Zona de Bajas Emisiones de Especial Protección. Orientativo: la señal y el parquímetro mandan.`;
 setInterval(render, 60000);
 </script>
 </body>

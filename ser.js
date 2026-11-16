@@ -13,6 +13,15 @@
  * Festivos come from the city's own calendario laboral (data.json `hol`); past its last
  * year every day is treated as ordinary, so the page says "de pago": the safe way to be wrong.
  * All times are Madrid's (Europe/Madrid) whatever zone the phone is in.
+ *
+ * Inside the Zona de Bajas Emisiones de Especial Protección Distrito Centro the SER has a
+ * second rule, by the car's environmental label, for anyone not registered there (madrid.es
+ * ZBEDEP Distrito Centro, as quoted by zonabajasemisiones.es and others, read 2026-11-16):
+ *   CERO   park in the SER with no time limit
+ *   ECO    park in the SER for at most 2 h
+ *   B, C   enter only to park off-street (car park, garage), so no SER space at all,
+ *          unless a resident's one-day invitation covers the car
+ * data.json marks each segment (seg[6]): 1 inside, 2 on a perimeter street, 0 outside.
  */
 
 export const RULES = {
@@ -22,6 +31,14 @@ export const RULES = {
   'Rojo': { name: 'ámbito hospitalario (rojo)', maxMin: 240, who: 'cualquier usuario' },
   'Naranja': { name: 'ámbito disuasorio (naranja)', maxMin: 720, who: 'un solo tique, 0,50 €/h' },
 };
+
+/** The ZBEDEP Distrito Centro rule for a segment's seg[6] code, or '' outside it. */
+export function zbeNote(code) {
+  const rule = 'si no estás empadronado en el distrito, con etiqueta B o C no puedes aparcar en la calle, solo en un aparcamiento (salvo invitación de un empadronado); ECO, máximo 2 h; CERO, sin límite';
+  if (code === 1) return `Zona de Bajas Emisiones Distrito Centro: ${rule}.`;
+  if (code === 2) return `En el borde de la Zona de Bajas Emisiones Distrito Centro. Si la plaza queda dentro: ${rule}.`;
+  return '';
+}
 
 const DAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -111,7 +128,7 @@ export function indexSegments(data) {
 
 /**
  * SER segments within `nearM` of `p`, nearest first, one per colour:
- *   [{ colour, m, street, number, spaces }]
+ *   [{ colour, m, street, number, spaces, zbe }]
  * Empty means no SER segment is mapped that close: outside the SER, or a gap in the data,
  * and the page says exactly that rather than "free".
  */
@@ -122,7 +139,7 @@ export function serAt(p, idx, { nearM = 50 } = {}) {
   for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++)
     for (const i of grid.get(`${ci + di},${cj + dj}`) || []) {
       const s = data.seg[i], m = metres(p, { lat: s[0], lon: s[1] });
-      if (m <= nearM) hits.push({ colour: data.col[s[2]], m, street: data.str[s[4]], number: s[5], spaces: s[3] });
+      if (m <= nearM) hits.push({ colour: data.col[s[2]], m, street: data.str[s[4]], number: s[5], spaces: s[3], zbe: s[6] || 0 });
     }
   // Sorted on the exact distance, rounded only for display: sorting the rounded metres let
   // 47.4 m beat 46.6 m whenever the grid happened to read it first (Calle de Cartagena).
