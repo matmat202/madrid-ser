@@ -12,6 +12,12 @@ La posición no sale del teléfono.
 A phone page for Madrid's regulated street parking (SER): whether you pay at the spot you are
 standing on, until when, and the nearest city car park.
 
+## Historia
+
+**https://matmat202.github.io/madrid-ser/story/** — *En el centro, ni una plaza azul*: de las
+7.203 plazas SER del distrito Centro, ninguna es azul, y fuera del centro las azules van
+juntas. `story/build_story.py` la calcula con el mismo `data.json` que usa la página.
+
 ## Datos
 
 Portal de datos abiertos del Ayuntamiento de Madrid (CC BY 4.0): *SER. Calles y número de

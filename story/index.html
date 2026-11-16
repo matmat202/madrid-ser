@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>En el centro, ni una plaza azul · ¿Se paga aquí?: una historia</title>
+<meta name="description" content="Una historia de ¿Se paga aquí?: de las 7.203 plazas SER del distrito Centro de Madrid, ninguna es azul, y fuera del centro las azules van juntas: desde un tramo verde típico, la más cercana está a 98 m, no a 43 m como si estuvieran repartidas al azar.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="plot" aria-hidden="true"></div>
+<p id="err" role="alert"></p>
+<main>
+
+<section class="step" data-step="map"><div>
+  <p class="kicker">¿Se paga aquí? · una historia</p>
+  <h1>En el centro, ni una plaza azul</h1>
+  <p><a href="../">¿Se paga aquí?</a> contesta plaza a plaza. Visto desde arriba, Madrid tiene
+  <b data-fact="spaces"></b> plazas SER en <b data-fact="n_seg"></b> tramos de calle.</p>
+  <p>Las verdes son de los vecinos: un visitante paga y a las 2 horas tiene que irse. Las azules
+  son de cualquiera, hasta 4 horas. Solo <b data-fact="blue_share"></b> de las plazas son azules:
+  <b data-fact="blue"></b>.</p>
+  <p class="small">Baja ↓</p>
+</div></section>
+
+<section class="step" data-step="centro"><div>
+  <p class="kicker">Capítulo 1 · El distrito Centro</p>
+  <h2>Siete mil plazas, ninguna azul</h2>
+  <p>El distrito Centro tiene <b data-fact="centro_spaces"></b> plazas SER. Azules:
+  <b data-fact="centro_blue"></b>. Todas las de Sol, Palacio, Embajadores, Cortes, Justicia y
+  Universidad son verdes (y unas pocas naranjas).</p>
+  <p>La plaza azul más cercana a la Puerta del Sol está a <b data-fact="blue_sol"></b>, ya
+  fuera del distrito.</p>
+</div></section>
+
+<section class="step" data-step="rings"><div>
+  <p class="kicker">Capítulo 2 · Desde Sol hacia fuera</p>
+  <h2>La azul empieza donde acaba el centro</h2>
+  <p>Contadas en anillos de medio kilómetro alrededor de Sol: en el primer kilómetro solo
+  <b data-fact="inner_share"></b> de las plazas son azules; más allá, <b data-fact="outer_share"></b>.</p>
+  <p class="small">No se dibujan los anillos con menos de 200 plazas.</p>
+</div></section>
+
+<section class="step" data-step="gap"><div>
+  <p class="kicker">Capítulo 3 · Fuera del centro</p>
+  <h2>Y donde las hay, van juntas</h2>
+  <p>Fuera del centro tampoco están repartidas. Desde un tramo verde típico, la plaza azul
+  más cercana está a <b data-fact="gap_median"></b>. Si las mismas azules estuvieran
+  repartidas al azar entre las mismas aceras, estaría a <b data-fact="null_median"></b>.</p>
+  <p>Para <b data-fact="far"></b> de los tramos verdes, la azul más cercana está a 200 m o más.</p>
+  <p class="small">Lo encontré mirando, así que lo comprobé: quitando el distrito Centro, que
+  no tiene ninguna, la distancia típica sigue siendo <b data-fact="gap_out_median"></b>, frente
+  a <b data-fact="null_out_median"></b> al azar. «Al azar» son <b data-fact="seeds"></b>
+  barajadas con semilla fija, y las tres dan lo mismo con diferencias de menos de 2 m.</p>
+</div></section>
+
+<section class="step" data-step="zbe"><div>
+  <p class="kicker">Capítulo 4 · La Zona de Bajas Emisiones</p>
+  <h2>Para un coche B o C, en el centro no hay plaza en la calle</h2>
+  <p>Casi todo el distrito Centro es Zona de Bajas Emisiones de Especial Protección. Si no
+  estás empadronado allí, con etiqueta B o C solo puedes entrar para aparcar en un
+  aparcamiento: ninguna plaza SER de dentro es para ti, ni verde ni azul. Con ECO, 2 horas;
+  con CERO, sin límite.</p>
+  <p>Son <b data-fact="inside"></b> tramos dentro y <b data-fact="edge"></b> en las calles del
+  perímetro, que se recorren libremente: ahí depende de qué acera.</p>
+  <p class="small">Desde el 16 de noviembre de 2026, ¿Se paga aquí? lo dice en cada plaza del
+  distrito Centro. Antes decía «Máximo 2 h», como en el resto de Madrid.</p>
+</div></section>
+
+<section class="step" data-step="map"><div>
+  <p class="kicker">Epílogo</p>
+  <h2>Pruébalo en la calle</h2>
+  <p>Abre <a href="../?lat=40.41629&amp;lon=-3.70784">¿Se paga aquí? en la calle de los
+  Bordadores</a>, al lado de la Plaza Mayor, o en cualquier otra plaza de Madrid.</p>
+  <p class="small">Datos: Ayuntamiento de Madrid, <a href="https://datos.madrid.es">datos.madrid.es</a>,
+  CC BY 4.0, SER: calles y número de plazas, a 30/09/2026; son los mismos que usa la página.
+  Un tramo es una fila del fichero: un número de una calle, con su color y sus plazas. Las
+  distancias son en línea recta, no andando. Norma de la Zona de Bajas Emisiones: madrid.es.
+  El programa está <a href="https://github.com/matmat202/madrid-ser/blob/main/story/build_story.py">en el repositorio</a>.</p>
+</div></section>
+
+</main>
+<script type="module" src="story.js"></script>
+</body>
+</html>
